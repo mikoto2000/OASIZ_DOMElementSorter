@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -13,7 +14,7 @@ import org.w3c.dom.NodeList;
  */
 public class DOMElementSorter {
 
-    private static Comparator<Node> COMPARATOR_DEFAULT =  new Comparator<Node>() {
+    public static final Comparator<Node> COMPARATOR_DEFAULT =  new Comparator<Node>() {
         @Override
         public int compare(Node n1, Node n2) {
             // タグ名でソート
@@ -21,43 +22,22 @@ public class DOMElementSorter {
         }
     };
 
-    private static SortCondition SORT_CONDITION_DEFAULT =  new SortCondition() {
+    public static final SortCondition SORT_CONDITION_DEFAULT =  new SortCondition() {
         @Override
         public boolean isSortTarget(Node node) {
             return true;
         }
     };
 
-    private Comparator<Node> comparator;
-    private SortCondition sortCondition;
-
-    /**
-     * Constructor
-     */
-    public DOMElementSorter() {
-        this(COMPARATOR_DEFAULT, SORT_CONDITION_DEFAULT);
+    public static void sort(Document document) {
+        sort(document, true, SORT_CONDITION_DEFAULT, COMPARATOR_DEFAULT);
     }
 
-    /**
-     * Constructor
-     */
-    public DOMElementSorter(Comparator<Node> comparator) {
-        this(comparator, SORT_CONDITION_DEFAULT);
+    public static void sort(Element element, SortCondition sortCondition, Comparator<Node> comparator) {
+        sort(element, true, sortCondition, comparator);
     }
 
-    /**
-     * Constructor
-     */
-    public DOMElementSorter(Comparator<Node> comparator, SortCondition sortCondition) {
-        this.comparator = comparator;
-        this.sortCondition = sortCondition;
-    }
-
-    public void sort(Document document) {
-        sort(document, true);
-    }
-
-    private void sort(Node node, boolean isRecursion) {
+    private static void sort(Node node, boolean isRecursion, SortCondition sortCondition, Comparator<Node> comparator) {
         // 子ノード情報取得
         NodeList nodes = node.getChildNodes();
         int size = nodes.getLength();
@@ -65,7 +45,7 @@ public class DOMElementSorter {
         // 再帰フラグが立って入れば、再帰する
         if (isRecursion) {
             for (int i = 0; i < size; i++) {
-                sort(nodes.item(i), isRecursion);
+                sort(nodes.item(i), isRecursion, sortCondition, comparator);
             }
         }
 
