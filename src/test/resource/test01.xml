@@ -1,0 +1,17 @@
+<xml>
+    <parent01>
+        <b>bbb</b>
+        <c>ccc</c>
+        <a>aaa</a>
+    </parent01>
+    <parent>
+        <b>bbb</b>
+        <c>ccc</c>
+        <a>aaa</a>
+    </parent>
+    <parent>
+        <a>0aaa</a>
+        <b>0bbb</b>
+        <c>0ccc</c>
+    </parent>
+</xml>
