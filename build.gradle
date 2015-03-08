@@ -15,9 +15,7 @@ repositories {
     jcenter()
 }
 
-checkstyleMain {
-    ignoreFailures = true
-}
+[checkstyleMain, checkstyleTest]*.ignoreFailures = true
 
 dependencies {
     testCompile "junit:junit:4.11"
