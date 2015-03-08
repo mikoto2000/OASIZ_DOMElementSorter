@@ -63,8 +63,9 @@ public class DOMElementSorter {
         NodeList nodes = node.getChildNodes();
         int size = nodes.getLength();
 
+        // 除外フラグが立っていない、かつ、
         // 再帰フラグが立って入れば、再帰する
-        if (isRecursion) {
+        if (!excludeTargetCondition.isExcludeTarget(node) && isRecursion) {
             for (int i = 0; i < size; i++) {
                 sort(nodes.item(i), isRecursion, SortTargetCondition, comparator, excludeTargetCondition);
             }
@@ -85,7 +86,11 @@ public class DOMElementSorter {
         Collections.sort(nodeList, comparator);
         for (Node n : nodeList) {
             node.removeChild(n);
-            node.appendChild(n);
+
+            // 除外ノードでなければ追加し直す
+            if (!excludeTargetCondition.isExcludeTarget(n)) {
+                node.appendChild(n);
+            }
         }
     }
 
