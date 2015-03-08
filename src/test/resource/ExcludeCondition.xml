@@ -1,0 +1,12 @@
+<xml>
+    <target>
+        <b>test.</b>
+        <c>masg.</c>
+        <a>gast.</a>
+    </target>
+    <notarget>
+        <b>test.</b>
+        <c>masg.</c>
+        <a>gast.</a>
+    </notarget>
+</xml>
