@@ -20,6 +20,10 @@ public class TestDomElementSorter {
         "src/test/resource/EmptyXml.xml";
     private static final String EMPTY_XML_OUTPUT =
             "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml/>";
+    private static final String TAG_NAME_PATH =
+        "src/test/resource/TagName.xml";
+    private static final String TAG_NAME_OUTPUT =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</xml>";
 
     @Test
     public void testSortEmptyXml() throws SAXException, ParserConfigurationException, TransformerException, IOException {
@@ -28,5 +32,14 @@ public class TestDomElementSorter {
         String result = DOMElementSorter.Util.documentToString(document);
 
         assertThat(result, is(EMPTY_XML_OUTPUT));
+    }
+
+    @Test
+    public void testSortTagName() throws SAXException, ParserConfigurationException, TransformerException, IOException {
+        Document document = DOMElementSorter.Util.createDocument(TAG_NAME_PATH);
+        DOMElementSorter.sort(document);
+        String result = DOMElementSorter.Util.documentToString(document);
+
+        assertThat(result, is(TAG_NAME_OUTPUT));
     }
 }
