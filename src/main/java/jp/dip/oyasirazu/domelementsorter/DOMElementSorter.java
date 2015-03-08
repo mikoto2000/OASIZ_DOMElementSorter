@@ -54,8 +54,8 @@ public class DOMElementSorter {
         sort(document, true, SORT_CONDITION_DEFAULT, NODE_COMPARATOR_DEFAULT, EXCLUDE_TARGET_CONDITION_DEFAULT);
     }
 
-    public static void sort(Element element, SortTargetCondition SortTargetCondition, Comparator<Node> comparator, ExcludeTargetCondition excludeTargetCondition) {
-        sort(element, true, SortTargetCondition, comparator, excludeTargetCondition);
+    public static void sort(Node node, SortTargetCondition SortTargetCondition, Comparator<Node> comparator, ExcludeTargetCondition excludeTargetCondition) {
+        sort(node, true, SortTargetCondition, comparator, excludeTargetCondition);
     }
 
     private static void sort(Node node, boolean isRecursion, SortTargetCondition SortTargetCondition, Comparator<Node> comparator, ExcludeTargetCondition excludeTargetCondition) {
