@@ -10,6 +10,8 @@ import org.xml.sax.SAXException;
 
 public class Main {
 
+    private Main() {}
+
     public static void main(String[] args) throws SAXException,
                 IOException, ParserConfigurationException, TransformerException {
 

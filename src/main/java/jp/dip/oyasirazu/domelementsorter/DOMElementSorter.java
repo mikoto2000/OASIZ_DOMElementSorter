@@ -49,6 +49,8 @@ public class DOMElementSorter {
         }
     };
 
+    private DOMElementSorter() {}
+
     public static void sort(Document document) {
         sort(document, true, SORT_CONDITION_DEFAULT, NODE_COMPARATOR_DEFAULT, EXCLUDE_TARGET_CONDITION_DEFAULT);
     }
@@ -117,6 +119,9 @@ public class DOMElementSorter {
     public interface NodeComparator extends Comparator<Node> {}
 
     public static class Util {
+
+        private Util() {}
+
         public static Document createDocument(String filePath) throws SAXException,
                     IOException, ParserConfigurationException {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
