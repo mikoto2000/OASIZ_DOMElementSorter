@@ -8,22 +8,23 @@ import javax.xml.transform.TransformerException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-public class Main {
+public final class Main {
 
     private Main() {}
 
-    public static void main(String[] args) throws SAXException,
-                IOException, ParserConfigurationException, TransformerException {
+    public static void main(final String[] args) throws SAXException,
+                IOException, ParserConfigurationException,
+                TransformerException {
 
         Document document = DOMElementSorter.Util.createDocument(args[0]);
         sortChildNode(document);
-        String documentString = DOMElementSorter.Util.documentToString(document);
+        String documentString =
+                DOMElementSorter.Util.documentToString(document);
 
         System.out.println(documentString);
     }
 
-    private static void sortChildNode(Document document) {
-
+    private static void sortChildNode(final Document document) {
         DOMElementSorter.sort(document);
     }
 }

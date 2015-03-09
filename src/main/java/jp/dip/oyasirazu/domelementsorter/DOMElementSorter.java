@@ -24,42 +24,56 @@ import org.xml.sax.SAXException;
 /**
  * DOMElementSorter
  */
-public class DOMElementSorter {
+public final class DOMElementSorter {
 
-    public static final NodeComparator NODE_COMPARATOR_DEFAULT =  new NodeComparator() {
+    public static final NodeComparator NODE_COMPARATOR_DEFAULT =
+            new NodeComparator() {
         @Override
-        public int compare(Node n1, Node n2) {
+        public int compare(final Node n1, final Node n2) {
             // タグ名でソート
             return n1.getNodeName().compareTo(n2.getNodeName());
         }
     };
 
-    public static final ExcludeTargetCondition EXCLUDE_TARGET_CONDITION_DEFAULT =  new ExcludeTargetCondition() {
+    public static final ExcludeTargetCondition
+            EXCLUDE_TARGET_CONDITION_DEFAULT = new ExcludeTargetCondition() {
         @Override
-        public boolean isExcludeTarget(Node node) {
+        public boolean isExcludeTarget(final Node node) {
             // 除外するノードなし
             return false;
         }
     };
-    public static final SortTargetCondition SORT_CONDITION_DEFAULT =  new SortTargetCondition() {
-
+    public static final SortTargetCondition SORT_CONDITION_DEFAULT =
+            new SortTargetCondition() {
         @Override
-        public boolean isSortTarget(Node node) {
+        public boolean isSortTarget(final Node node) {
             return true;
         }
     };
 
     private DOMElementSorter() {}
 
-    public static void sort(Document document) {
-        sort(document, true, SORT_CONDITION_DEFAULT, NODE_COMPARATOR_DEFAULT, EXCLUDE_TARGET_CONDITION_DEFAULT);
+    public static void sort(final Document document) {
+        sort(document, true, SORT_CONDITION_DEFAULT,
+                NODE_COMPARATOR_DEFAULT,
+                EXCLUDE_TARGET_CONDITION_DEFAULT);
     }
 
-    public static void sort(Node node, SortTargetCondition SortTargetCondition, Comparator<Node> comparator, ExcludeTargetCondition excludeTargetCondition) {
-        sort(node, true, SortTargetCondition, comparator, excludeTargetCondition);
+    public static void sort(final Node node,
+            final SortTargetCondition sortTargetCondition,
+            final Comparator<Node> comparator,
+            final ExcludeTargetCondition excludeTargetCondition) {
+
+        sort(node, true, sortTargetCondition,
+                comparator, excludeTargetCondition);
     }
 
-    private static void sort(Node node, boolean isRecursion, SortTargetCondition SortTargetCondition, Comparator<Node> comparator, ExcludeTargetCondition excludeTargetCondition) {
+    private static void sort(final Node node,
+            final boolean isRecursion,
+            final SortTargetCondition sortTargetCondition,
+            final Comparator<Node> comparator,
+            final ExcludeTargetCondition excludeTargetCondition) {
+
         // 子ノード情報取得
         NodeList nodes = node.getChildNodes();
         int size = nodes.getLength();
@@ -68,12 +82,13 @@ public class DOMElementSorter {
         // 再帰フラグが立って入れば、再帰する
         if (!excludeTargetCondition.isExcludeTarget(node) && isRecursion) {
             for (int i = 0; i < size; i++) {
-                sort(nodes.item(i), isRecursion, SortTargetCondition, comparator, excludeTargetCondition);
+                sort(nodes.item(i), isRecursion, sortTargetCondition,
+                        comparator, excludeTargetCondition);
             }
         }
 
         // ソートターゲットでなければ何もしない
-        if (!SortTargetCondition.isSortTarget(node)) {
+        if (!sortTargetCondition.isSortTarget(node)) {
             return;
         }
 
@@ -83,7 +98,8 @@ public class DOMElementSorter {
             nodeList.add(nodes.item(i));
         }
 
-        // ArrayList<Node> をソートし、append し直すことで子ノードのソートを行う
+        // ArrayList<Node> をソートし、
+        // append し直すことで子ノードのソートを行う
         Collections.sort(nodeList, comparator);
         for (Node n : nodeList) {
             node.removeChild(n);
@@ -98,10 +114,11 @@ public class DOMElementSorter {
     /**
      * ソート対象ノードを判定するためのインターフェース。
      *
-     * isSortTarget(Node node) の戻り値が true であるノードの子要素をソートする。
+     * isSortTarget(Node node) の戻り値が
+     * true であるノードの子要素をソートする。
      */
     public interface SortTargetCondition {
-        boolean isSortTarget(Node node);
+        boolean isSortTarget(final Node node);
     }
 
     /**
@@ -110,7 +127,7 @@ public class DOMElementSorter {
      * isExcludeTarget(Node node) の戻り値が true であるノードは出力しない。
      */
     public interface ExcludeTargetCondition {
-        boolean isExcludeTarget(Node node);
+        boolean isExcludeTarget(final Node node);
     }
 
     /**
@@ -118,24 +135,31 @@ public class DOMElementSorter {
      */
     public interface NodeComparator extends Comparator<Node> {}
 
-    public static class Util {
+    public static final class Util {
 
         private Util() {}
 
-        public static Document createDocument(String filePath) throws SAXException,
-                    IOException, ParserConfigurationException {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        public static Document createDocument(final String filePath)
+                throws SAXException, IOException,
+                       ParserConfigurationException {
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             return builder.parse(filePath);
         }
 
-        public static String documentToString(Document document) throws TransformerException {
+        public static String documentToString(final Document document)
+                throws TransformerException {
+
             StringWriter sw = new StringWriter();
             TransformerFactory tfactory = TransformerFactory.newInstance();
             Transformer transformer = tfactory.newTransformer();
 
-            transformer.transform(new DOMSource(document), new StreamResult(sw));
-            return sw.toString().replaceAll("\\>\\<", ">\n<").replaceAll("\\n\\s+", "\n");
+            transformer.transform(
+                    new DOMSource(document), new StreamResult(sw));
+            return sw.toString().replaceAll("\\>\\<", ">\n<")
+                    .replaceAll("\\n\\s+", "\n");
         }
     }
 }
