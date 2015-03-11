@@ -22,10 +22,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * DOMElementSorter
+ * DOMElementSorter は、
+ * DOM エレメントをソートするためのユーティリティクラスです。
  */
 public final class DOMElementSorter {
 
+    /**
+     * デフォルトのノード比較用クラス。
+     */
     public static final NodeComparator NODE_COMPARATOR_DEFAULT =
             new NodeComparator() {
         @Override
@@ -35,6 +39,9 @@ public final class DOMElementSorter {
         }
     };
 
+    /**
+     * デフォルトの出力対象外ノード判定用クラス。
+     */
     public static final ExcludeTargetCondition
             EXCLUDE_TARGET_CONDITION_DEFAULT = new ExcludeTargetCondition() {
         @Override
@@ -43,6 +50,10 @@ public final class DOMElementSorter {
             return false;
         }
     };
+
+    /**
+     * デフォルトのソート対象ノード判定用クラス。
+     */
     public static final SortTargetCondition SORT_CONDITION_DEFAULT =
             new SortTargetCondition() {
         @Override
@@ -51,14 +62,36 @@ public final class DOMElementSorter {
         }
     };
 
-    private DOMElementSorter() {}
+    /**
+     * constructor.
+     */
+    private DOMElementSorter() { }
 
+    /**
+     * 指定された Document の要素を再帰的にソートする。
+     *
+     * <ul>
+     * <li>ソート条件：タグ名</li>
+     * <li>ソート対象ノード：すべて</li>
+     * <li>出力対象外ノード：なし</li>
+     * </ul>
+     *
+     * @param document ソート対象 Document
+     */
     public static void sort(final Document document) {
         sort(document, true, SORT_CONDITION_DEFAULT,
                 NODE_COMPARATOR_DEFAULT,
                 EXCLUDE_TARGET_CONDITION_DEFAULT);
     }
 
+    /**
+     * 指定された Node の要素を再帰的にソートする。
+     *
+     * @param node ソート対象 Node
+     * @param  sortTargetCondition ソート対象ノード判定クラス
+     * @param comparator ソートのための比較クラス
+     * @param excludeTargetCondition 出力対象ノード判定クラス
+     */
     public static void sort(final Node node,
             final SortTargetCondition sortTargetCondition,
             final Comparator<Node> comparator,
@@ -68,6 +101,16 @@ public final class DOMElementSorter {
                 comparator, excludeTargetCondition);
     }
 
+    /**
+     * 指定された Node の要素を再帰的にソートする。
+     *
+     * @param node ソート対象 Node
+     * @param isRecursion 再帰フラグ
+     *        (true:再帰的にソートする, false:再帰的にソートしない)
+     * @param  sortTargetCondition ソート対象ノード判定クラス
+     * @param comparator ソートのための比較クラス
+     * @param excludeTargetCondition 出力対象ノード判定クラス
+     */
     private static void sort(final Node node,
             final boolean isRecursion,
             final SortTargetCondition sortTargetCondition,
@@ -118,6 +161,12 @@ public final class DOMElementSorter {
      * true であるノードの子要素をソートする。
      */
     public interface SortTargetCondition {
+        /**
+         * ソート対象かどうかを判定する。
+         *
+         * @param node 判定するノード
+         * @return 判定結果(true:対象である, false:対象でない)
+         */
         boolean isSortTarget(final Node node);
     }
 
@@ -127,18 +176,40 @@ public final class DOMElementSorter {
      * isExcludeTarget(Node node) の戻り値が true であるノードは出力しない。
      */
     public interface ExcludeTargetCondition {
+        /**
+         * 出力対象かどうかを判定する。
+         *
+         * @param node 判定するノード
+         * @return 判定結果(true:対象である, false:対象でない)
+         */
         boolean isExcludeTarget(final Node node);
     }
 
     /**
      * ノードのソートに利用する Comparator。
      */
-    public interface NodeComparator extends Comparator<Node> {}
+    public interface NodeComparator extends Comparator<Node> { }
 
+    /**
+     * DOM ツリーを作るのに便利な機能を実装したユーティリティクラス。
+     */
     public static final class Util {
 
-        private Util() {}
+        /**
+         * constructor.
+         */
+        private Util() { }
 
+        /**
+         * 指定されたファイルから Document を作成する。
+         *
+         * @param filePath XML ファイルのパス
+         * @return Document インスタンス
+         * @throws SAXException SAX の一般的なエラーまたは警告発生時
+         * @throws ParserConfigurationException
+         *              パーサーの重大な構成エラー発生時
+         * @throws IOException なんらかの入出力例外の発生時
+         */
         public static Document createDocument(final String filePath)
                 throws SAXException, IOException,
                        ParserConfigurationException {
@@ -149,6 +220,13 @@ public final class DOMElementSorter {
             return builder.parse(filePath);
         }
 
+        /**
+         * Document から XML 文字列を作成する。
+         *
+         * @param document Document インスタンス
+         * @return XML 文字列
+         * @throws TransformerException 変換処理例外発生時
+         */
         public static String documentToString(final Document document)
                 throws TransformerException {
 
