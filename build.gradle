@@ -3,6 +3,7 @@ apply {
     plugin 'eclipse'
     plugin 'checkstyle'
     plugin 'findbugs'
+    plugin 'jacoco'
 }
 
 sourceCompatibility = 1.8
