@@ -1,0 +1,12 @@
+<root>
+    <parentb>
+        <childb>b</childb>
+        <childc>c</childc>
+        <childa>a</childa>
+    </parentb>
+    <parenta>
+        <childb>b</childb>
+        <childc>c</childc>
+        <childa>a</childa>
+    </parenta>
+</root>

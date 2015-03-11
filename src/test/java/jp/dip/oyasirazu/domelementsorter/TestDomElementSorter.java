@@ -36,6 +36,10 @@ public class TestDomElementSorter {
         "src/test/resource/ExcludeCondition.xml";
     private static final String EXCLUDE_CONDITION_OUTPUT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</target>\n</xml>";
+    private static final String NO_RECURSIVE_PATH =
+        "src/test/resource/NoRecursive.xml";
+    private static final String NO_RECURSIVE_OUTPUT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<root>\n<parenta>\n<childb>b</childb>\n<childc>c</childc>\n<childa>a</childa>\n</parenta>\n<parentb>\n<childb>b</childb>\n<childc>c</childc>\n<childa>a</childa>\n</parentb>\n</root>";
 
     @Test
     public void testSortEmptyXml() throws SAXException, ParserConfigurationException, TransformerException, IOException {
@@ -111,5 +115,23 @@ public class TestDomElementSorter {
         String result = DOMElementSorter.Util.documentToString(document);
 
         assertThat(result, is(EXCLUDE_CONDITION_OUTPUT));
+    }
+
+    @Test
+    public void testSortWithNoRecursive() throws SAXException, ParserConfigurationException, TransformerException, IOException {
+        Document document = DOMElementSorter.Util.createDocument(NO_RECURSIVE_PATH);
+
+        // ルートエレメントを指定することで、
+        // ルートエレメントの子要素のみソートして、
+        // 孫以降をソートさせないようにする。
+        DOMElementSorter.sort(
+                document.getDocumentElement(),
+                false,
+                DOMElementSorter.SORT_CONDITION_DEFAULT,
+                DOMElementSorter.NODE_COMPARATOR_DEFAULT,
+                DOMElementSorter.EXCLUDE_TARGET_CONDITION_DEFAULT);
+        String result = DOMElementSorter.Util.documentToString(document);
+
+        assertThat(result, is(NO_RECURSIVE_OUTPUT));
     }
 }

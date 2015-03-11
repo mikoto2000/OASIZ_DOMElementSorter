@@ -111,7 +111,7 @@ public final class DOMElementSorter {
      * @param comparator ソートのための比較クラス
      * @param excludeTargetCondition 出力対象ノード判定クラス
      */
-    private static void sort(final Node node,
+    public static void sort(final Node node,
             final boolean isRecursion,
             final SortTargetCondition sortTargetCondition,
             final Comparator<Node> comparator,
