@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,8 +16,14 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -79,6 +86,31 @@ public final class DOMElementSorter {
      * @param document ソート対象 Document
      */
     public static void sort(final Document document) {
+        sort(document, true, SORT_CONDITION_DEFAULT,
+                NODE_COMPARATOR_DEFAULT,
+                EXCLUDE_TARGET_CONDITION_DEFAULT);
+    }
+
+    /**
+     * 指定された Document を再帰的にソートする。
+     *
+     * @param documente ソート対象 Document
+     * @param useValues ソートに使用するノードを表す XPath 式のリスト
+     *                  index が小さければ小さいほどソートの優先順位が高い。
+     * @param excludeXPath 出力対象外ノードを表す XPath 式
+     * @throws XPathExpressionException XPath 処理失敗時
+     */
+    public static void sort(final Document document,
+            final List<String> useValues,
+            final String excludeXPath) throws XPathExpressionException {
+
+        // excludeXPath が指定されている場合、
+        // XPath 式で取得できるノードを削除する。
+        if (excludeXPath != null
+                && excludeXPath != "") {
+            DOMElementSorter.Util.removeNodes(document, excludeXPath);
+        }
+
         sort(document, true, SORT_CONDITION_DEFAULT,
                 NODE_COMPARATOR_DEFAULT,
                 EXCLUDE_TARGET_CONDITION_DEFAULT);
@@ -238,6 +270,52 @@ public final class DOMElementSorter {
                     new DOMSource(document), new StreamResult(sw));
             return sw.toString().replaceAll("\\>\\<", ">\n<")
                     .replaceAll("\\n\\s+", "\n");
+        }
+
+        /**
+         * Document から XPath 式で指定したノードを削除する。
+         *
+         * @param document Document インスタンス
+         * @param excludePath 削除するノードの XPath 式
+         * @throws XPathExpressionException XPath 処理失敗時
+         */
+        public static void removeNodes(
+                final Document document,
+                final String excludeXPath) throws XPathExpressionException {
+            XPathFactory xpathfactory = XPathFactory.newInstance();
+            XPath xpath = xpathfactory.newXPath();
+
+            NodeList excludeNodeList = (NodeList) xpath.evaluate(
+                    excludeXPath,
+                    document,
+                    XPathConstants.NODESET);
+
+            System.out.println(excludeNodeList.getLength());
+            if (excludeNodeList.getLength() > 0) {
+                System.out.println(excludeNodeList.item(0).getNodeName());
+            }
+
+            NodeList nodes = document.getChildNodes();
+            int size = nodes.getLength();
+            for (int i = 0; i < size; i++) {
+                System.out.println(nodes.item(i).getNodeName());
+            }
+
+            int excludeNodeListLength = excludeNodeList.getLength();
+            for (int i = 0; i < excludeNodeListLength; i++) {
+                Node node = excludeNodeList.item(i);
+                Node parentNode = node.getParentNode();
+
+                if (parentNode != null) {
+                    parentNode.removeChild(node);
+                } else {
+                    if (node instanceof Attr) {
+                        Attr attr = (Attr)node;
+                        Element ownerElement = attr.getOwnerElement();
+                        ownerElement.removeAttributeNode(attr);
+                    }
+                }
+            }
         }
     }
 }

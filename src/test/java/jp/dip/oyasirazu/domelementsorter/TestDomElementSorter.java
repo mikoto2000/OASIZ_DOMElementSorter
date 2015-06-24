@@ -3,6 +3,7 @@ package jp.dip.oyasirazu.domelementsorter;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -36,6 +37,10 @@ public class TestDomElementSorter {
         "src/test/resource/ExcludeCondition.xml";
     private static final String EXCLUDE_CONDITION_OUTPUT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</target>\n</xml>";
+    private static final String EXCLUDE_USE_XPATH_PATH =
+        "src/test/resource/ExcludeUseXPath.xml";
+    private static final String EXCLUDE_USE_XPATH_OUTPUT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</target>\n</xml>";
     private static final String NO_RECURSIVE_PATH =
         "src/test/resource/NoRecursive.xml";
     private static final String NO_RECURSIVE_OUTPUT =
@@ -57,6 +62,15 @@ public class TestDomElementSorter {
         String result = DOMElementSorter.Util.documentToString(document);
 
         assertThat(result, is(TAG_NAME_OUTPUT));
+    }
+
+    @Test
+    public void testSortUseXPath() throws XPathException, SAXException, ParserConfigurationException, TransformerException, IOException {
+        Document document = DOMElementSorter.Util.createDocument(EXCLUDE_USE_XPATH_PATH);
+        DOMElementSorter.sort(document, null, "//*/@id|/xml/notarget");
+        String result = DOMElementSorter.Util.documentToString(document);
+
+        assertThat(result, is(EXCLUDE_USE_XPATH_OUTPUT));
     }
 
     @Test
