@@ -290,17 +290,6 @@ public final class DOMElementSorter {
                     document,
                     XPathConstants.NODESET);
 
-            System.out.println(excludeNodeList.getLength());
-            if (excludeNodeList.getLength() > 0) {
-                System.out.println(excludeNodeList.item(0).getNodeName());
-            }
-
-            NodeList nodes = document.getChildNodes();
-            int size = nodes.getLength();
-            for (int i = 0; i < size; i++) {
-                System.out.println(nodes.item(i).getNodeName());
-            }
-
             int excludeNodeListLength = excludeNodeList.getLength();
             for (int i = 0; i < excludeNodeListLength; i++) {
                 Node node = excludeNodeList.item(i);
