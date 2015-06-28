@@ -1,6 +1,9 @@
 package jp.dip.oyasirazu.domelementsorter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathException;
@@ -41,6 +44,10 @@ public class TestDomElementSorter {
         "src/test/resource/ExcludeUseXPath.xml";
     private static final String EXCLUDE_USE_XPATH_OUTPUT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</target>\n</xml>";
+    private static final String SORT_USE_XPATH_PATH =
+        "src/test/resource/SortUseXPath.xml";
+    private static final String SORT_USE_XPATH_OUTPUT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<notarget>\n<a id=\"2\">gast.</a>\n<b id=\"0\">test.</b>\n<c id=\"1\">masg.</c>\n</notarget>\n<notarget>\n<a id=\"0\">test.</a>\n<a id=\"1\">gast.</a>\n<a id=\"2\">masg.</a>\n</notarget>\n<target>\n<a id=\"2\">gast.</a>\n<b id=\"0\">test.</b>\n<c id=\"1\">masg.</c>\n</target>\n</xml>";
     private static final String NO_RECURSIVE_PATH =
         "src/test/resource/NoRecursive.xml";
     private static final String NO_RECURSIVE_OUTPUT =
@@ -71,6 +78,18 @@ public class TestDomElementSorter {
         String result = DOMElementSorter.Util.documentToString(document);
 
         assertThat(result, is(EXCLUDE_USE_XPATH_OUTPUT));
+    }
+
+    @Test
+    public void testSortUseUseValues() throws XPathException, SAXException, ParserConfigurationException, TransformerException, IOException {
+        Document document = DOMElementSorter.Util.createDocument(SORT_USE_XPATH_PATH);
+        List<String> useValues = new ArrayList<String>();
+        useValues.add(".");
+        useValues.add("@id");
+        DOMElementSorter.sort(document, useValues, null);
+        String result = DOMElementSorter.Util.documentToString(document);
+
+        assertThat(result, is(SORT_USE_XPATH_OUTPUT));
     }
 
     @Test

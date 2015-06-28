@@ -2,7 +2,6 @@ package jp.dip.oyasirazu.domelementsorter;
 
 import java.io.IOException;
 import java.io.StringWriter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +17,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
@@ -104,6 +104,16 @@ public final class DOMElementSorter {
             final List<String> useValues,
             final String excludeXPath) throws XPathExpressionException {
 
+        // useValues を使用して NodeComparatorXPath を作る。
+        NodeComparator nc = null;
+        if (useValues != null) {
+            nc = new NodeComparatorXPath(useValues);
+        }
+
+        if (nc == null) {
+            nc = NODE_COMPARATOR_DEFAULT;
+        }
+
         // excludeXPath が指定されている場合、
         // XPath 式で取得できるノードを削除する。
         if (excludeXPath != null
@@ -112,7 +122,7 @@ public final class DOMElementSorter {
         }
 
         sort(document, true, SORT_CONDITION_DEFAULT,
-                NODE_COMPARATOR_DEFAULT,
+                nc,
                 EXCLUDE_TARGET_CONDITION_DEFAULT);
     }
 
@@ -222,6 +232,69 @@ public final class DOMElementSorter {
      */
     public interface NodeComparator extends Comparator<Node> { }
 
+    /**
+     * XPath 式を利用したノード比較用クラス。
+     */
+    public static class NodeComparatorXPath implements NodeComparator {
+
+        /* ソートに使用する値を探すための XPath 式リスト */
+        private List<XPathExpression> xPathExpressions;
+
+        public NodeComparatorXPath(List<String> useValues)
+                throws XPathExpressionException {
+
+            XPathFactory xpathfactory = XPathFactory.newInstance();
+            XPath xpath = xpathfactory.newXPath();
+
+            xPathExpressions = new ArrayList<XPathExpression>();
+
+            for (String xPathStr : useValues) {
+                XPathExpression expression = xpath.compile(xPathStr);
+                xPathExpressions.add(expression);
+            }
+        }
+
+        @Override
+        public int compare(final Node n1, final Node n2) {
+            // そもそもノードの種類が違う場合、種類ごとにソートさせてしまおう
+            if (n1.getNodeType() != n2.getNodeType()) {
+                return n1.getNodeType() - n2.getNodeType();
+            }
+
+            // タグ名でソート
+            for (XPathExpression xPathExpression : xPathExpressions) {
+                try {
+                    Node node1 = (Node)(xPathExpression.evaluate(n1, XPathConstants.NODE));
+                    if (node1 != null) {
+                        Node node2 = (Node)(xPathExpression.evaluate(n2, XPathConstants.NODE));
+                        if (node2 != null) {
+                            int result;
+                            // Element の場合は、タグ名でソート
+                            // そうでない場合はテキストでソート
+                            if (node1.getNodeType() == Node.ELEMENT_NODE) {
+                                // Element の場合は、タグ名でソート
+                                result = node1.getNodeName().compareTo(node2.getNodeName());
+                            } else {
+                                // Element 以外の場合はテキストでソート
+                                result = node1.getNodeValue().compareTo(node2.getNodeValue());
+                            }
+
+                            // ソート順が確定したら結果をリターン
+                            // ソート順が確定できなければ次の要素を使って比較を行う
+                            if (result == 0) {
+                                continue;
+                            } else {
+                                return result;
+                            }
+                        }
+                    }
+                } catch (XPathExpressionException e) {
+                    // あとで考える
+                }
+            }
+            return 0;
+        }
+    };
     /**
      * DOM ツリーを作るのに便利な機能を実装したユーティリティクラス。
      */
