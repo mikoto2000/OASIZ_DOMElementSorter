@@ -341,8 +341,17 @@ public final class DOMElementSorter {
 
             transformer.transform(
                     new DOMSource(document), new StreamResult(sw));
-            return sw.toString().replaceAll("\\>\\<", ">\n<")
+
+            // 文字列に変換
+            String returnStr = sw.toString()
+                    // 改行コードを「\n」に統一
+                    .replaceAll("\r\n", "\n")
+                    // タグ区切りで改行を入れる
+                    .replaceAll("\\>\\<", ">\n<")
+                    // 空白削除
                     .replaceAll("\\n\\s+", "\n");
+
+            return returnStr;
         }
 
         /**
