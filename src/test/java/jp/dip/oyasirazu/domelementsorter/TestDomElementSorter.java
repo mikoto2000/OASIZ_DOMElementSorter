@@ -125,8 +125,6 @@ public class TestDomElementSorter {
                 DOMElementSorter.EXCLUDE_TARGET_CONDITION_DEFAULT);
         String result = DOMElementSorter.Util.documentToString(document);
 
-        int x=1+1;
-
         assertThat(result, is(NODE_COMPARATOR_OUTPUT));
     }
 
