@@ -1,6 +1,7 @@
 package jp.dip.oyasirazu.domelementsorter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +49,10 @@ public class TestDomElementSorter {
         "src/test/resource/SortUseXPath.xml";
     private static final String SORT_USE_XPATH_OUTPUT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<notarget>\n<a id=\"2\">gast.</a>\n<b id=\"0\">test.</b>\n<c id=\"1\">masg.</c>\n</notarget>\n<notarget>\n<a id=\"0\">test.</a>\n<a id=\"1\">gast.</a>\n<a id=\"2\">masg.</a>\n</notarget>\n<target>\n<a id=\"2\">gast.</a>\n<b id=\"0\">test.</b>\n<c id=\"1\">masg.</c>\n</target>\n</xml>";
+    private static final String SORT_AND_EXCLUDE_USE_XPATH_PATH =
+        "src/test/resource/SortAndExcludeUseXPath.xml";
+    private static final String SORT_AND_EXCLUDE_USE_XPATH_OUTPUT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a id=\"0\">test.</a>\n<a id=\"1\">masg.</a>\n<a id=\"2\">gast.</a>\n</target>\n</xml>";
     private static final String NO_RECURSIVE_PATH =
         "src/test/resource/NoRecursive.xml";
     private static final String NO_RECURSIVE_OUTPUT =
@@ -78,6 +83,15 @@ public class TestDomElementSorter {
         String result = DOMElementSorter.Util.documentToString(document);
 
         assertThat(result, is(EXCLUDE_USE_XPATH_OUTPUT));
+    }
+
+    @Test
+    public void testSortAndExcludeUseXPath() throws XPathException, SAXException, ParserConfigurationException, TransformerException, IOException {
+        Document document = DOMElementSorter.Util.createDocument(SORT_AND_EXCLUDE_USE_XPATH_PATH);
+        DOMElementSorter.sort(document, Arrays.asList(new String[]{"./@id"}), "/xml/notarget");
+        String result = DOMElementSorter.Util.documentToString(document);
+
+        assertThat(result, is(SORT_AND_EXCLUDE_USE_XPATH_OUTPUT));
     }
 
     @Test

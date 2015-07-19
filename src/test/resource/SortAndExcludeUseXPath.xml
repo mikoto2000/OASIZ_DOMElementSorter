@@ -1,0 +1,17 @@
+<xml>
+    <target>
+        <a id="1">masg.</a>
+        <a id="0">test.</a>
+        <a id="2">gast.</a>
+    </target>
+    <notarget>
+        <a id="2">gast.</a>
+        <c id="1">masg.</c>
+        <b id="0">test.</b>
+    </notarget>
+    <notarget>
+        <a id="1">gast.</a>
+        <a id="2">masg.</a>
+        <a id="0">test.</a>
+    </notarget>
+</xml>
