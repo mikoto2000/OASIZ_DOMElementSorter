@@ -94,7 +94,7 @@ public final class DOMElementSorter {
     /**
      * 指定された Document を再帰的にソートする。
      *
-     * @param documente ソート対象 Document
+     * @param document ソート対象 Document
      * @param useValues ソートに使用するノードを表す XPath 式のリスト
      *                  index が小さければ小さいほどソートの優先順位が高い。
      * @param excludeXPath 出力対象外ノードを表す XPath 式
@@ -237,10 +237,20 @@ public final class DOMElementSorter {
      */
     public static class NodeComparatorXPath implements NodeComparator {
 
-        /* ソートに使用する値を探すための XPath 式リスト */
+        /**
+         * ソートに使用する値を探すための XPath 式リスト。
+         * インデックスの若いものから順番に比較に使用する。
+         */
         private List<XPathExpression> xPathExpressions;
 
-        public NodeComparatorXPath(List<String> useValues)
+        /**
+        * コンストラクタ。
+        *
+        * @param useValues ソートに使用する値を探すための XPath 式リスト
+        *
+        * @throws XPathExpressionException XPath 式 の作成に失敗した場合。
+        */
+        public NodeComparatorXPath(final List<String> useValues)
                 throws XPathExpressionException {
 
             XPathFactory xpathfactory = XPathFactory.newInstance();
@@ -264,23 +274,28 @@ public final class DOMElementSorter {
             // タグ名でソート
             for (XPathExpression xPathExpression : xPathExpressions) {
                 try {
-                    Node node1 = (Node)(xPathExpression.evaluate(n1, XPathConstants.NODE));
+                    Node node1 = (Node)(xPathExpression.evaluate(n1,
+                            XPathConstants.NODE));
                     if (node1 != null) {
-                        Node node2 = (Node)(xPathExpression.evaluate(n2, XPathConstants.NODE));
+                        Node node2 = (Node) (xPathExpression.evaluate(n2,
+                                XPathConstants.NODE));
                         if (node2 != null) {
                             int result;
                             // Element の場合は、タグ名でソート
                             // そうでない場合はテキストでソート
                             if (node1.getNodeType() == Node.ELEMENT_NODE) {
                                 // Element の場合は、タグ名でソート
-                                result = node1.getNodeName().compareTo(node2.getNodeName());
+                                result = node1.getNodeName().compareTo(
+                                        node2.getNodeName());
                             } else {
                                 // Element 以外の場合はテキストでソート
-                                result = node1.getNodeValue().compareTo(node2.getNodeValue());
+                                result = node1.getNodeValue().compareTo(
+                                        node2.getNodeValue());
                             }
 
                             // ソート順が確定したら結果をリターン
-                            // ソート順が確定できなければ次の要素を使って比較を行う
+                            // ソート順が確定できなければ
+                            // 次の要素を使って比較を行う
                             if (result == 0) {
                                 continue;
                             } else {
@@ -290,6 +305,7 @@ public final class DOMElementSorter {
                     }
                 } catch (XPathExpressionException | RuntimeException e) {
                     // 比較失敗。判断は次に持ち越す。
+                    continue;
                 }
             }
             return 0;
@@ -358,7 +374,7 @@ public final class DOMElementSorter {
          * Document から XPath 式で指定したノードを削除する。
          *
          * @param document Document インスタンス
-         * @param excludePath 削除するノードの XPath 式
+         * @param excludeXPath 削除するノードの XPath 式
          * @throws XPathExpressionException XPath 処理失敗時
          */
         public static void removeNodes(
@@ -367,7 +383,7 @@ public final class DOMElementSorter {
             XPathFactory xpathfactory = XPathFactory.newInstance();
             XPath xpath = xpathfactory.newXPath();
 
-            NodeList excludeNodeList = (NodeList) xpath.evaluate(
+            NodeList excludeNodeList = (NodeList)xpath.evaluate(
                     excludeXPath,
                     document,
                     XPathConstants.NODESET);

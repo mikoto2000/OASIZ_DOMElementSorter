@@ -17,15 +17,24 @@ import org.kohsuke.args4j.Option;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+/**
+ * Main.
+ */
 public final class Main {
 
+    /**
+     * private constructor.
+     */
     private Main() {}
 
+    /**
+     * Main method.
+     */
     public static void main(final String[] args) throws SAXException,
                 IOException, ParserConfigurationException,
                 TransformerException,
                 XPathExpressionException,
-                CmdLineException{
+                CmdLineException {
 
         // オプションオブジェクト準備
         CmdOptions options = new CmdOptions();
@@ -38,7 +47,8 @@ public final class Main {
 
         // デバッグプリント
         System.out.println(options);
-        Document document = DOMElementSorter.Util.createDocument(options.getTargetFilePath().get(0));
+        Document document = DOMElementSorter.Util.createDocument(
+                options.getTargetFilePath().get(0));
 
         String useValues = options.getUseValues();
         List<String> useValueList;
@@ -57,18 +67,44 @@ public final class Main {
         System.out.println(documentString);
     }
 
-    private static void sortChildNode(final Document document, List<String> useValues, String excludeXPath) throws XPathExpressionException {
+    /**
+     * 指定された Document を再帰的にソートする。
+     *
+     * @param document ソート対象 Document
+     * @param useValues ソートに使用するノードを表す XPath 式のリスト
+     *                  index が小さければ小さいほどソートの優先順位が高い。
+     * @param excludeXPath 出力対象外ノードを表す XPath 式
+     * @throws XPathExpressionException XPath 処理失敗時
+     */
+    private static void sortChildNode(
+            final Document document,
+            final List<String> useValues,
+            final String excludeXPath) throws XPathExpressionException {
         DOMElementSorter.sort(document, useValues, excludeXPath);
     }
 
+    /**
+     * コマンドラインオプションを表現するクラス。
+     */
     @Data
     static class CmdOptions {
-        @Option(name="--useValues")
+        /**
+         * ソートに使用する要素を表す XPath式。
+         *
+         * 優先度が高い順番で、カンマ区切りで XPath 式を列挙する。
+         */
+        @Option(name = "--useValues")
         private String useValues;
 
-        @Option(name="--excludeXPath")
+        /**
+         * 出力対象外ノードを表す XPath 式。
+         */
+        @Option(name = "--excludeXPath")
         private String excludeXPath;
 
+        /**
+         * ソート対象のファイルパス。
+         */
         @Argument
         private List<String> targetFilePath;
     }
