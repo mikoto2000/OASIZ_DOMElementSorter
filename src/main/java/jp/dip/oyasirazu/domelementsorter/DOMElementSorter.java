@@ -288,8 +288,8 @@ public final class DOMElementSorter {
                             }
                         }
                     }
-                } catch (XPathExpressionException e) {
-                    // あとで考える
+                } catch (XPathExpressionException | RuntimeException e) {
+                    // 比較失敗。判断は次に持ち越す。
                 }
             }
             return 0;

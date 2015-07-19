@@ -16,9 +16,27 @@ repositories {
     jcenter()
 }
 
-[checkstyleMain, checkstyleTest]*.ignoreFailures = true
+[checkstyleMain, checkstyleTest, findbugsMain, findbugsTest]*.ignoreFailures = true
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+}
+
+eclipse.classpath {
+    plusConfigurations += [ configurations.provided ]
+    noExportConfigurations += [ configurations.provided ]
+}
+
 
 dependencies {
+    compile 'args4j:args4j:2.0.16'
+    provided 'org.projectlombok:lombok:1.16.4'
     testCompile "junit:junit:4.11"
     testCompile "org.hamcrest:hamcrest-all:1.3"
 }
