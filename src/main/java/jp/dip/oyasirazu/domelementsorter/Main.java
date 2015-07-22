@@ -45,8 +45,6 @@ public final class Main {
         // パース
         optionParser.parseArgument(args);
 
-        // デバッグプリント
-        System.out.println(options);
         Document document = DOMElementSorter.Util.createDocument(
                 options.getTargetFilePath().get(0));
 
