@@ -15,6 +15,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -186,12 +187,24 @@ public final class DOMElementSorter {
         // ArrayList<Node> をソートし、
         // append し直すことで子ノードのソートを行う
         Collections.sort(nodeList, comparator);
-        for (Node n : nodeList) {
-            node.removeChild(n);
+        Document document;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            document = (Document)node;
+        } else {
+            document = node.getOwnerDocument();
+            for (Node n : nodeList) {
+                node.removeChild(n);
 
-            // 除外ノードでなければ追加し直す
-            if (!excludeTargetCondition.isExcludeTarget(n)) {
-                node.appendChild(n);
+                // 空のテキストノードは無視する
+                if (n.getNodeType() == Node.TEXT_NODE
+                        && n.getTextContent().trim().isEmpty()) {
+                    continue;
+                }
+
+                // 除外ノードでなければ追加し直す
+                if (!excludeTargetCondition.isExcludeTarget(n)) {
+                    node.appendChild(n);
+                }
             }
         }
     }
@@ -353,21 +366,14 @@ public final class DOMElementSorter {
 
             StringWriter sw = new StringWriter();
             TransformerFactory tfactory = TransformerFactory.newInstance();
-            Transformer transformer = tfactory.newTransformer();
+            Transformer transformer =
+                tfactory.newTransformer(new StreamSource(
+                    DOMElementSorter.class.getResourceAsStream("/style.xsl")));
 
             transformer.transform(
                     new DOMSource(document), new StreamResult(sw));
 
-            // 文字列に変換
-            String returnStr = sw.toString()
-                    // 改行コードを「\n」に統一
-                    .replaceAll("\r\n", "\n")
-                    // タグ区切りで改行を入れる
-                    .replaceAll("\\>\\<", ">\n<")
-                    // 空白削除
-                    .replaceAll("\\n\\s+", "\n");
-
-            return returnStr;
+            return sw.toString().replaceAll("\r\n", "\n");
         }
 
         /**

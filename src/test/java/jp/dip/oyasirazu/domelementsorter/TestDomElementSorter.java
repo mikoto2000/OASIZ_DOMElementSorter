@@ -21,42 +21,43 @@ import static org.hamcrest.MatcherAssert.*;
  * TestDomElementSorter
  */
 public class TestDomElementSorter {
+
     private static final String EMPTY_XML_PATH =
         "src/test/resource/EmptyXml.xml";
     private static final String EMPTY_XML_OUTPUT =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml/>";
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml/>\n";
     private static final String TAG_NAME_PATH =
         "src/test/resource/TagName.xml";
     private static final String TAG_NAME_OUTPUT =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</xml>";
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml>\n    <a>gast.</a>\n    <b>test.</b>\n    <c>masg.</c>\n</xml>\n";
     private static final String SORT_CONDITION_PATH =
         "src/test/resource/SortCondition.xml";
     private static final String SORT_CONDITION_OUTPUT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<notarget>\n<b>test.</b>\n<c>masg.</c>\n<a>gast.</a>\n</notarget>\n<target>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</target>\n</xml>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml>\n    <notarget>\n        <b>test.</b>\n        <c>masg.</c>\n        <a>gast.</a>\n    </notarget>\n    <target>\n        <a>gast.</a>\n        <b>test.</b>\n        <c>masg.</c>\n    </target>\n</xml>\n";
     private static final String NODE_COMPARATOR_PATH =
         "src/test/resource/TagName.xml";
     private static final String NODE_COMPARATOR_OUTPUT =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<c>masg.</c>\n<b>test.</b>\n<a>gast.</a>\n</xml>";
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml>\n    <c>masg.</c>\n    <b>test.</b>\n    <a>gast.</a>\n</xml>\n";
     private static final String EXCLUDE_CONDITION_PATH =
         "src/test/resource/ExcludeCondition.xml";
     private static final String EXCLUDE_CONDITION_OUTPUT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</target>\n</xml>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml>\n    <target>\n        <a>gast.</a>\n        <b>test.</b>\n        <c>masg.</c>\n    </target>\n</xml>\n";
     private static final String EXCLUDE_USE_XPATH_PATH =
         "src/test/resource/ExcludeUseXPath.xml";
     private static final String EXCLUDE_USE_XPATH_OUTPUT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a>gast.</a>\n<b>test.</b>\n<c>masg.</c>\n</target>\n</xml>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml>\n    <target>\n        <a>gast.</a>\n        <b>test.</b>\n        <c>masg.</c>\n    </target>\n</xml>\n";
     private static final String SORT_USE_XPATH_PATH =
         "src/test/resource/SortUseXPath.xml";
     private static final String SORT_USE_XPATH_OUTPUT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<notarget>\n<a id=\"2\">gast.</a>\n<b id=\"0\">test.</b>\n<c id=\"1\">masg.</c>\n</notarget>\n<notarget>\n<a id=\"0\">test.</a>\n<a id=\"1\">gast.</a>\n<a id=\"2\">masg.</a>\n</notarget>\n<target>\n<a id=\"2\">gast.</a>\n<b id=\"0\">test.</b>\n<c id=\"1\">masg.</c>\n</target>\n</xml>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml>\n    <notarget>\n        <a id=\"2\">gast.</a>\n        <b id=\"0\">test.</b>\n        <c id=\"1\">masg.</c>\n    </notarget>\n    <notarget>\n        <a id=\"0\">test.</a>\n        <a id=\"1\">gast.</a>\n        <a id=\"2\">masg.</a>\n    </notarget>\n    <target>\n        <a id=\"2\">gast.</a>\n        <b id=\"0\">test.</b>\n        <c id=\"1\">masg.</c>\n    </target>\n</xml>\n";
     private static final String SORT_AND_EXCLUDE_USE_XPATH_PATH =
         "src/test/resource/SortAndExcludeUseXPath.xml";
     private static final String SORT_AND_EXCLUDE_USE_XPATH_OUTPUT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<xml>\n<target>\n<a id=\"0\">test.</a>\n<a id=\"1\">masg.</a>\n<a id=\"2\">gast.</a>\n</target>\n</xml>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml>\n    <target>\n        <a id=\"0\">test.</a>\n        <a id=\"1\">masg.</a>\n        <a id=\"2\">gast.</a>\n    </target>\n</xml>\n";
     private static final String NO_RECURSIVE_PATH =
         "src/test/resource/NoRecursive.xml";
     private static final String NO_RECURSIVE_OUTPUT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<root>\n<parenta>\n<childb>b</childb>\n<childc>c</childc>\n<childa>a</childa>\n</parenta>\n<parentb>\n<childb>b</childb>\n<childc>c</childc>\n<childa>a</childa>\n</parentb>\n</root>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<root>\n    <parenta>\n        <childb>b</childb>\n        <childc>c</childc>\n        <childa>a</childa>\n    </parenta>\n    <parentb>\n        <childb>b</childb>\n        <childc>c</childc>\n        <childa>a</childa>\n    </parentb>\n</root>\n";
 
     @Test
     public void testSortEmptyXml() throws SAXException, ParserConfigurationException, TransformerException, IOException {
