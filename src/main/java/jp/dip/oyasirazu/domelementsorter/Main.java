@@ -1,6 +1,11 @@
 package jp.dip.oyasirazu.domelementsorter;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,24 +50,39 @@ public final class Main {
         // パース
         optionParser.parseArgument(args);
 
-        Document document = DOMElementSorter.Util.createDocument(
-                options.getTargetFilePath().get(0));
-
-        String useValues = options.getUseValues();
-        List<String> useValueList;
-        if (useValues == null) {
-            useValueList = null;
-        } else {
-            useValueList = Arrays.asList(useValues.split(","));
+        String outputFilePathStr = options.getOutputFilePath();
+        if (outputFilePathStr == null) {
+            printUsage(optionParser);
+            System.exit(0);
         }
 
-        String excludeXPath = options.getExcludeXPath();
+        // TODO: BufferedWriter の作り方どうにかならないものか...
+        try (BufferedWriter bw = Files.newBufferedWriter(
+                    Paths.get(outputFilePathStr),
+                    StandardCharsets.UTF_8,
+                    new StandardOpenOption[]{
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.WRITE})) {
+            Document document = DOMElementSorter.Util.createDocument(
+                    options.getTargetFilePath().get(0));
 
-        sortChildNode(document, useValueList, excludeXPath);
-        String documentString =
-                DOMElementSorter.Util.documentToString(document);
+            String useValues = options.getUseValues();
+            List<String> useValueList;
+            if (useValues == null) {
+                useValueList = null;
+            } else {
+                useValueList = Arrays.asList(useValues.split(","));
+            }
 
-        System.out.println(documentString);
+            String excludeXPath = options.getExcludeXPath();
+
+            sortChildNode(document, useValueList, excludeXPath);
+            String documentString =
+                    DOMElementSorter.Util.documentToString(document);
+
+            bw.write(documentString);
+        }
     }
 
     /**
@@ -81,11 +101,22 @@ public final class Main {
         DOMElementSorter.sort(document, useValues, excludeXPath);
     }
 
+    private static void printUsage(CmdLineParser cmdLineParser) {
+        // TODO: まともに表示する
+        cmdLineParser.printUsage(System.out);
+    }
+
     /**
      * コマンドラインオプションを表現するクラス。
      */
     @Data
     static class CmdOptions {
+        /**
+         * 出力ファイルパス。
+         */
+        @Option(name = "-o")
+        private String outputFilePath;
+
         /**
          * ソートに使用する要素を表す XPath式。
          *
