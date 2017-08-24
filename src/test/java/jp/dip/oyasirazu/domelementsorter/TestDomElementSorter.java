@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.*;
+import static org.junit.Assert.fail;
 
 /**
  * TestDomElementSorter
@@ -25,6 +26,10 @@ public class TestDomElementSorter {
     private static final String EMPTY_XML_PATH =
         "src/test/resource/EmptyXml.xml";
     private static final String EMPTY_XML_OUTPUT =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml/>\n";
+    private static final String NONASCII_PATH =
+        "src\\test\\resource\\非asciiパス\\非asciiパス.xml";
+    private static final String NONASCII_OUTPUT =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml/>\n";
     private static final String TAG_NAME_PATH =
         "src/test/resource/TagName.xml";
@@ -66,6 +71,25 @@ public class TestDomElementSorter {
         String result = DOMElementSorter.Util.documentToString(document);
 
         assertThat(result, is(EMPTY_XML_OUTPUT));
+    }
+
+    /**
+     * 非 ascii 文字を含むパスが問題なく読み込めることを確認。
+     */
+    @Test
+    public void testNonAsciiPath() throws SAXException, ParserConfigurationException, TransformerException, IOException {
+
+        try {
+            Document document = DOMElementSorter.Util.createDocument(NONASCII_PATH);
+            DOMElementSorter.sort(document);
+            String result = DOMElementSorter.Util.documentToString(document);
+
+            assertThat(result, is(NONASCII_OUTPUT));
+        } catch (SAXException
+                | ParserConfigurationException
+                | IOException e) {
+            fail("例外が出ちゃいましたねー : " + e.getMessage());
+        }
     }
 
     @Test

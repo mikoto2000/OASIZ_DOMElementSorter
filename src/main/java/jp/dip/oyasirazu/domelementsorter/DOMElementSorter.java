@@ -2,6 +2,7 @@ package jp.dip.oyasirazu.domelementsorter;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -351,7 +352,7 @@ public final class DOMElementSorter {
             DocumentBuilderFactory factory =
                     DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            return builder.parse(filePath);
+            return builder.parse(Paths.get(filePath).toFile());
         }
 
         /**
