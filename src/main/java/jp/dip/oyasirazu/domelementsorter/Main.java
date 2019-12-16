@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,7 +49,18 @@ public final class Main {
         CmdLineParser optionParser = new CmdLineParser(options);
 
         // パース
-        optionParser.parseArgument(args);
+        try {
+            optionParser.parseArgument(args);
+        } catch (CmdLineException e) {
+            printUsage(optionParser);
+            System.exit(1);
+        }
+
+        // ヘルプ判定
+        if (options.isHelp()) {
+            printUsage(optionParser);
+            System.exit(0);
+        }
 
         String outputFilePathStr = options.getOutputFilePath();
         if (outputFilePathStr == null) {
@@ -67,17 +79,9 @@ public final class Main {
             Document document = DOMElementSorter.Util.createDocument(
                     options.getTargetFilePath().get(0));
 
-            String useValues = options.getUseValues();
-            List<String> useValueList;
-            if (useValues == null) {
-                useValueList = null;
-            } else {
-                useValueList = Arrays.asList(useValues.split(","));
-            }
-
             String excludeXPath = options.getExcludeXPath();
 
-            sortChildNode(document, useValueList, excludeXPath);
+            sortChildNode(document, options.getUseValues(), excludeXPath);
             String documentString =
                     DOMElementSorter.Util.documentToString(document);
 
@@ -102,7 +106,11 @@ public final class Main {
     }
 
     private static void printUsage(CmdLineParser cmdLineParser) {
-        // TODO: まともに表示する
+        // Useage を表示
+        System.out.println("Useage:\n"
+                + "  Main [options] INPUT_XML\n"
+                + "\n"
+                + "Options:");
         cmdLineParser.printUsage(System.out);
     }
 
@@ -111,10 +119,17 @@ public final class Main {
      */
     @Data
     static class CmdOptions {
+
+        /**
+         * ヘルプ表示
+         */
+        @Option(name = "-h", aliases = "--help", usage = "print help.")
+        private boolean isHelp;
+
         /**
          * 出力ファイルパス。
          */
-        @Option(name = "-o")
+        @Option(name = "-o", metaVar = "OUTPUT_XML", usage = "output file path.")
         private String outputFilePath;
 
         /**
@@ -122,13 +137,13 @@ public final class Main {
          *
          * 優先度が高い順番で、カンマ区切りで XPath 式を列挙する。
          */
-        @Option(name = "--useValues")
-        private String useValues;
+        @Option(name = "--useValue", aliases = "-V", metaVar = "XPATH",usage = "XPath for sort values.")
+        private ArrayList<String> useValues;
 
         /**
          * 出力対象外ノードを表す XPath 式。
          */
-        @Option(name = "--excludeXPath")
+        @Option(name = "--excludeXPath", metaVar = "XPATH", usage = "XPath for exclude values.")
         private String excludeXPath;
 
         /**
