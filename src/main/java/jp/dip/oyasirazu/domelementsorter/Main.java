@@ -1,7 +1,9 @@
 package jp.dip.oyasirazu.domelementsorter;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -62,6 +64,12 @@ public final class Main {
             System.exit(0);
         }
 
+        // ライセンス判定
+        if (options.isLicense()) {
+            printLicense();
+            System.exit(0);
+        }
+
         String outputFilePathStr = options.getOutputFilePath();
         if (outputFilePathStr == null) {
             printUsage(optionParser);
@@ -114,6 +122,22 @@ public final class Main {
         cmdLineParser.printUsage(System.out);
     }
 
+    private static void printLicense() throws IOException {
+        // ライセンスを表示
+        try (
+            BufferedReader br = new BufferedReader(
+                new InputStreamReader(
+                    Main.class.getResourceAsStream("/LICENSE"), StandardCharsets.UTF_8));
+        ) {
+            String line = br.readLine();
+            while (line != null) {
+                System.out.println(line);
+                line = br.readLine();
+            }
+        }
+    }
+
+
     /**
      * コマンドラインオプションを表現するクラス。
      */
@@ -145,6 +169,9 @@ public final class Main {
          */
         @Option(name = "--excludeXPath", metaVar = "XPATH", usage = "XPath for exclude values.")
         private String excludeXPath;
+
+        @Option(name = "--license", usage = "print license.")
+        private boolean license;
 
         /**
          * ソート対象のファイルパス。
