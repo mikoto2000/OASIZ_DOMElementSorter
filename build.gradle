@@ -8,7 +8,7 @@ apply {
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = 1.0
+version = '2.0.0'
 
 [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 
@@ -88,7 +88,7 @@ task fbhtml << {
 jar {
     manifest {
         attributes 'Implementation-Title': 'XML element sort tool.'
-        attributes 'Implementation-Version': 1.0
+        attributes 'Implementation-Version': '2.0.0'
         attributes "Main-Class" : "jp.dip.oyasirazu.domelementsorter.Main"
     }
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
