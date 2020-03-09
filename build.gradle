@@ -1,9 +1,6 @@
 apply {
     plugin 'java'
     plugin 'eclipse'
-    plugin 'checkstyle'
-    plugin 'findbugs'
-    plugin 'jacoco'
 }
 
 sourceCompatibility = 11
@@ -16,73 +13,10 @@ repositories {
     jcenter()
 }
 
-[checkstyleMain, checkstyleTest, findbugsMain, findbugsTest]*.ignoreFailures = true
-
-configurations {
-    provided
-}
-
-sourceSets {
-    main {
-        compileClasspath += configurations.provided
-    }
-}
-
-eclipse.classpath {
-    plusConfigurations += [ configurations.provided ]
-    noExportConfigurations += [ configurations.provided ]
-}
-
-
 dependencies {
     compile 'args4j:args4j:2.0.16'
-    provided 'org.projectlombok:lombok:1.16.4'
     testCompile "junit:junit:4.11"
     testCompile "org.hamcrest:hamcrest-all:1.3"
-}
-
-task jacocoxml(dependsOn: "test") << {
-    tasks.withType(JacocoReport) {
-        reports {
-            xml.enabled = true
-            html.enabled = false
-            xml.destination = "${buildDir}/reports/jacoco/jacoco.xml"
-        }
-    }
-    tasks.jacocoTestReport.execute()
-}
-
-task jacocohtml(dependsOn: "test") << {
-    tasks.withType(JacocoReport) {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-            html.destination = "${buildDir}/reports/jacoco"
-        }
-    }
-    tasks.jacocoTestReport.execute()
-}
-
-task fbxml << {
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled = true
-            html.enabled = false
-        }
-    }
-    tasks.findbugsMain.execute()
-    tasks.findbugsTest.execute()
-}
-
-task fbhtml << {
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-        }
-    }
-    tasks.findbugsMain.execute()
-    tasks.findbugsTest.execute()
 }
 
 jar {
