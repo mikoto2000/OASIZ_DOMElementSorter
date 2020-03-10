@@ -24,6 +24,17 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-all:1.3"
 }
 
+// for checkstyle
+[checkstyleMain, checkstyleTest]*.ignoreFailures = true
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'XML element sort tool.'
