@@ -374,7 +374,9 @@ public final class DOMElementSorter {
             transformer.transform(
                     new DOMSource(document), new StreamResult(sw));
 
-            return sw.toString().replaceAll("\r\n", "\n");
+            // Java11 にバージョンアップしたら、空白文字だけの行が発生してしまったため、
+            // 暫定対応として正規表現で空白文字だけの行を削除。
+            return sw.toString().replaceAll("\r\n", "\n").replaceAll("(?m)^\\s*\n", "");
         }
 
         /**
