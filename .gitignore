@@ -1,5 +1,12 @@
+.classpath
 .gradle
+.project
+.settings
+bin/
 build/
+gradle.properties
+lombok.config
+tags
 
 # Ignore Gradle GUI config
 gradle-app.setting
