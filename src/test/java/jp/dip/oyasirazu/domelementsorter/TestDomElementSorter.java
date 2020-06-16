@@ -28,7 +28,7 @@ public class TestDomElementSorter {
     private static final String EMPTY_XML_OUTPUT =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml/>\n";
     private static final String NONASCII_PATH =
-        "src\\test\\resource\\非asciiパス\\非asciiパス.xml";
+        "src/test/resource/非asciiパス/非asciiパス.xml";
     private static final String NONASCII_OUTPUT =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<xml/>\n";
     private static final String TAG_NAME_PATH =
